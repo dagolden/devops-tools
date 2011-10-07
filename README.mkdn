@@ -1,0 +1,18 @@
+# Devops tools
+
+This repository is my personal "junk drawer" of devops tools.  I'm sharing
+in case any of it proves useful to others.
+
+## ubuntu-bootstrap-iso
+
+This tool modifies a stock Ubuntu "alternate install" ISO with a custom
+"preseed" file that carries out a fully-automated install sufficient to
+bootstrap the chef configuration management tool.
+
+# Copyright and License
+
+Unless otherwise noted, software in this repository is Copyright (c) 2011 by
+David Golden.
+ 
+This is free software, licensed under The Apache License, Version 2.0, January
+2004.
