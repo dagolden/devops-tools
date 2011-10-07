@@ -83,7 +83,7 @@ _system('chmod', '-R', '+w', $scratch);
 
 say "Patching scratch directory";
 _system("cp", "$src/custom.seed", "$scratch/preseed/custom.seed");
-_system('patch','-p2','-d',$scratch,'-i',"$src/autoinstall.patch");
+_system('patch','-p4','-s','-d',$scratch,'-i',"$src/autoinstall.patch");
 
 say "Creating new ISO";
 _system('mkisofs',
