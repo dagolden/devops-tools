@@ -24,10 +24,10 @@ the configuration management tool instead.)  The root password is set in
 the preseed file with an md5crypt password.  You will need to generate your
 own md5crypt password.  For example:
 
-  $ openssl passwd -1
-  Password: trustno1
-  Verifying - Password: trustno1
-  $1$9TU3fhzj$DDbGHxqf.MFRxoaBoMbDS.
+    $ openssl passwd -1
+    Password: trustno1
+    Verifying - Password: trustno1
+    $1$9TU3fhzj$DDbGHxqf.MFRxoaBoMbDS.
 
 Look for the line in custom.seed containing "passwd/root-password-crypted"
 and replace the crypted password on that line with your own.
