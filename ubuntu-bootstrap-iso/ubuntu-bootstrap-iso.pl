@@ -76,9 +76,9 @@ END {
   _system('umount', $mount) if $mounted;
 }
 
-say "Rsyncing ISO to scratch directory";
+say "Rsyncing source ISO to scratch directory";
 _system('mkdir', '-p', $scratch) unless -d $scratch;
-_system('rsync', '-av', '--delete', "$iso/", $scratch);
+_system('rsync', '-a', '--delete', "$mount/", $scratch);
 _system('chmod', '-R', '+w', $scratch);
 
 say "Patching scratch directory";
