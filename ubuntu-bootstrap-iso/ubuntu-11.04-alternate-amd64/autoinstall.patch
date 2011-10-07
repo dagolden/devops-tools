@@ -15,9 +15,9 @@ diff -ur /tmp/ubuntu-iso/isolinux/txt.cfg /srv/scratch/ubuntu-iso-modified//isol
 -default install
 +default automated
 +label automated
-+  menu  label ^Install Ubuntu (automated)
++  menu label ^Install Ubuntu (automated)
 +  kernel /install/vmlinuz
-+  append auto=true priority=critical preseed/file=/cdrom/preseed/custom.seed debian-installer/locale=en_US console-setup/layoutcodes=us initrd=/install/initrd.gz ramdisk_size=16384 root=/dev/ram rw quiet --
++  append auto=true priority=critical file=/cdrom/preseed/custom.seed vga=788 initrd=/install/initrd.gz text --
  label install
 -  menu label ^Install Ubuntu
 +  menu label ^Install Ubuntu (manual)
