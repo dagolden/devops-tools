@@ -185,10 +185,8 @@ not be cleaned up.
 =back
 
 =head1 COPYRIGHT AND LICENSE
-# Copyright and License
 
-Unless otherwise noted, software in this repository is Copyright (c) 2011 by
-David Golden.
+This software is Copyright (c) 2011 by David Golden.
  
 This is free software, licensed under The Apache License, Version 2.0, January
 2004.
