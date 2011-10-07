@@ -1,0 +1,46 @@
+# ubuntu-bootstrap-iso
+
+This tool modifies a stock Ubuntu "alternate install" ISO with a custom
+"preseed" file that carries out a fully-automated install sufficient to
+bootstrap the chef configuration management tool.
+
+**Caution**: This automated ISO will **DESTROY** a system it boots on
+without any prompts or warnings.  Use it only on a new virtual or
+bare-metal machine.
+
+The ISO creates a boot partition and an LVM partition, which is further
+divided into a swap partition and a single system partition.  The ISO also
+installs the openssh-server task, as well as the vim, screen and chef
+packages. (You can swap out chef for another configuration manager if you
+wish)  When installation is complete, a full "apt-get update; apt-get
+dist-upgrade" is performed and the system is rebooted.
+
+When I tested this in Virtualbox, after the reboot, I needed to enter
+"Alt-F1" to switch to the virtual console to get the login prompt.
+
+Unlike a standard Ubuntu install, the root account is enabled and no user
+account is created.  (It is assumed that any such config will be done by
+the configuration management tool instead.)  The root password is set in
+the preseed file with an md5crypt password.  You will need to generate your
+own md5crypt password.  For example:
+
+  $ openssl passwd -1
+  Password: trustno1
+  Verifying - Password: trustno1
+  $1$9TU3fhzj$DDbGHxqf.MFRxoaBoMbDS.
+
+Look for the line in custom.seed containing "passwd/root-password-crypted"
+and replace the crypted password on that line with your own.
+
+# Requirements
+
+This has been tested on Ubuntu, but should work on any Linux system with
+perl 5.10 (or later), rsync, mkisofs, mount, etc.  The user will need to be
+able to mount an ISO as a loopback filesystem (possibly with sudo).
+
+# Copyright and License
+
+This software is Copyright (c) 2011 by David Golden.
+ 
+This is open-source software and may be licensed under The Apache License,
+Version 2.0, January 2004.
