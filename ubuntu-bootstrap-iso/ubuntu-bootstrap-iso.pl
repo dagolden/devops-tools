@@ -3,6 +3,7 @@ use v5.10;
 use strict;
 use warnings;
 
+use Cwd qw/abs_path/;
 use Getopt::Long;
 use IPC::Cmd qw/can_run/;
 
@@ -32,6 +33,9 @@ for my $f ( qw/custom.seed autoinstall.patch/ ) {
 
 # remove trailing slashes
 s{/$}{} for ( $mount, $scratch, $src );
+
+# patch does chdir so src must be absolute
+$src = abs_path($src);
 
 #--------------------------------------------------------------------------#
 # Confirm command line tools are available
