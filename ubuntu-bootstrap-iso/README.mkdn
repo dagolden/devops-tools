@@ -32,6 +32,23 @@ own md5crypt password.  For example:
 Look for the line in custom.seed containing "passwd/root-password-crypted"
 and replace the crypted password on that line with your own.
 
+# Usage
+
+Synopsis:
+
+    $ ubuntu-bootstrap-iso.pl \
+      --iso /path/to/ubuntu.iso \
+      --mount /mnt/iso \
+      --scratch /var/tmp/bootstrap-iso \
+      --src ./ubuntu-11.04-alternative-amd64 \
+      --output /path/to/new.iso \
+      --sudo \
+      --clean
+
+Run perldoc on the tool for more details:
+
+    perldoc ubuntu-bootstrap-iso.pl
+
 # Requirements
 
 This has been tested on Ubuntu, but should work on any Linux system with
