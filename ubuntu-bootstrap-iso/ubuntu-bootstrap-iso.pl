@@ -66,17 +66,20 @@ for my $cmd ( @required_commands ) {
 # Main program
 #--------------------------------------------------------------------------#
 
-say "Mounting ISO";
+my $mounted;
+
+say "Mounting source ISO";
 _system('mkdir', '-p', $mount) unless -d $mount;
-_system('mount', '-o', 'loop', $iso, $mount);
+_system('mount', '-o', 'loop', $iso, $mount) or $mounted++;
+END {
+  say "Unmounting source ISO";
+  _system('umount', $mount) if $mounted;
+}
 
 say "Rsyncing ISO to scratch directory";
 _system('mkdir', '-p', $scratch) unless -d $scratch;
 _system('rsync', '-av', '--delete', "$iso/", $scratch);
 _system('chmod', '-R', '+w', $scratch);
-
-say "Unmounting ISO";
-_system('umount', $mount);
 
 say "Patching scratch directory";
 _system("cp", "$src/custom.seed", "$scratch/preseed/custom.seed");
