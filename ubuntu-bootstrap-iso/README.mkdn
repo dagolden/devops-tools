@@ -55,6 +55,23 @@ This has been tested on Ubuntu, but should work on any Linux system with
 perl 5.10 (or later), rsync, mkisofs, mount, etc.  The user will need to be
 able to mount an ISO as a loopback filesystem (possibly with sudo).
 
+# Included pre-seeds
+
+Each of the subdirectories holds preseed data for a different version
+or configuration of Ubuntu. Use them with the `--src` parameter.
+
+## ubuntu-11.04-alternate-amd64
+
+This is an autoinstalling stock Ubuntu 11.04.
+
+## ubuntu-11.04-alternate-amd64-VBox
+
+This is an autoinstalling stock Ubuntu 11.04 that installs VirtualBox
+Guest Additions on first boot.  This allows retreiving the guest IP address
+from the host with this command:
+
+    $ VBoxManage guestproperty get VMName /VirtualBox/GuestInfo/Net/0/IP
+
 # Copyright and License
 
 This software is Copyright (c) 2011 by David Golden.
