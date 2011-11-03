@@ -245,7 +245,7 @@ tasksel tasksel/first multiselect openssh-server
 #tasksel tasksel/first multiselect kubuntu-desktop
 
 # Individual additional packages to install
-d-i pkgsel/include string vim screen chef
+d-i pkgsel/include string vim screen
 # Whether to upgrade packages after debootstrap.
 # Allowed values: none, safe-upgrade, full-upgrade
 d-i pkgsel/upgrade select safe-upgrade
@@ -373,5 +373,5 @@ xserver-xorg xserver-xorg/config/device/driver select vesa
 # still a usable /target directory. You can chroot to /target and use it
 # directly, or use the apt-install and in-target commands to easily install
 # packages and run commands in the target system.
-d-i preseed/late_command string in-target apt-get update; in-target apt-get dist-upgrade -y; in-target update-rc.d chef-client disable; sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=\).*/\1\"\"/g' /target/etc/default/grub; in-target update-grub;
+d-i preseed/late_command string in-target apt-get update; in-target apt-get dist-upgrade -y; sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=\).*/\1\"\"/g' /target/etc/default/grub; in-target update-grub;
 
