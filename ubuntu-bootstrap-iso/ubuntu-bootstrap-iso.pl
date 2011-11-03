@@ -5,7 +5,9 @@ use warnings;
 
 use Cwd qw/abs_path/;
 use Getopt::Long;
+use File::Basename qw/basename/;
 use IPC::Cmd qw/can_run/;
+use File::Temp qw/tempfile/;
 
 #--------------------------------------------------------------------------#
 # Process and validate command line options
@@ -19,6 +21,7 @@ my $parsed_ok = GetOptions(
   'scratch|s=s' => \(my $scratch),
   'output|o=s'  => \(my $output),
   'src|s=s'     => \(my $src),
+  'post|p:s@'   => \(my $postinstalls),
   'clean|c'     => \(my $clean),
   'sudo|S'      => \(my $sudo),
 );
@@ -30,6 +33,11 @@ die "ISO '$iso' not found\n" unless -f $iso;
 for my $f ( qw/custom.seed autoinstall.patch/ ) {
   die "Source '$src' does not contain seed file" unless -f "$src/$f";
 }
+
+# confirm post-install paths are valid
+for my $pi ( @$postinstalls ) {
+  die "Post-install script '$pi' does not exist" unless -f $pi
+};
 
 # remove trailing slashes
 s{/$}{} for ( $mount, $scratch, $src );
@@ -85,6 +93,17 @@ say "Patching scratch directory";
 _system("cp", "$src/custom.seed", "$scratch/preseed/custom.seed");
 _system('patch','-p4','-s','-d',$scratch,'-i',"$src/autoinstall.patch");
 
+if ( @$postinstalls ) {
+  say "Adding post-installation scripts";
+  _gen_post_install("$scratch/rc.local.new");
+  my $pi_target = "$scratch/post-install.d";
+  _system('mkdir', '-p', $pi_target);
+  for my $pi ( @$postinstalls ) {
+    _system("cp", $pi, "$pi_target/" . basename($pi));
+  }
+  _system("chmod", '-R', '+x', $pi_target);
+}
+
 say "Creating new ISO at $output";
 _system('mkisofs',
   '-r','-V',"Custom Ubuntu Install CD", '-cache-inodes',
@@ -102,6 +121,28 @@ if ( $clean ) {
 # Utility subroutines
 #--------------------------------------------------------------------------#
 
+sub _gen_post_install {
+  my ($path) = @_;
+
+  my ($fh, $fname) = tempfile;
+  print {$fh} <<'HERE';
+#!/bin/sh
+if [ -d /etc/post-install.d ]; then
+  for i in /etc/post-install.d/*; do
+    if [ -x $i ]; then
+      $i 
+      chmod -x $i
+    fi
+  done
+  unset i
+fi
+exit 0
+HERE
+  close $fh;
+  _system("cp", $fname, $path);
+  _system("chmod", "+x", $path);
+}
+
 sub _system {
   my ($cmd, @args) = @_;
   $cmd = $cmd_path{$cmd} or die "Unrecognized command '$cmd'";
@@ -113,6 +154,7 @@ sub _system {
     and die "Error running $cmd @args" . ( $! ? "$!\n" : "\n" );
   return;
 }
+
 
 exit;
 
@@ -129,6 +171,7 @@ ubuntu-bootstrap-iso.pl - Remaster an auto-installing Ubuntu ISO
     --mount /mnt/iso \
     --scratch /var/tmp/bootstrap-iso \
     --src ./ubuntu-11.04-alternative-amd64 \
+    --post ./post-install/chef \
     --output /path/to/new.iso \
     --sudo \
     --clean
@@ -172,6 +215,13 @@ F<autoinstall.patch> files; this may need to be specific to a particular
 Ubuntu version but it's possible that files from one version will also
 work on other versions, depending on how much Ubuntu has modified the
 installer
+
+=item *
+
+C<--post PATH>: path to a post-install script to be run on first boot
+of the server.  These will be copied to the output ISO and will be
+installed into F</etc/post-install.d> during installation.  They will
+be run from rc.local when the server is first booted.
 
 =item *
 

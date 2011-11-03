@@ -373,5 +373,5 @@ xserver-xorg xserver-xorg/config/device/driver select vesa
 # still a usable /target directory. You can chroot to /target and use it
 # directly, or use the apt-install and in-target commands to easily install
 # packages and run commands in the target system.
-d-i preseed/late_command string in-target apt-get update; in-target apt-get dist-upgrade -y; sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=\).*/\1\"\"/g' /target/etc/default/grub; in-target update-grub;
+d-i preseed/late_command string in-target apt-get update; in-target apt-get dist-upgrade -y; sed -i 's/\(GRUB_CMDLINE_LINUX_DEFAULT=\).*/\1\"\"/g' /target/etc/default/grub; in-target update-grub; cp /cdrom/rc.local.new /target/etc/rc.local; cp -a /cdrom/post-install.d /target/etc
 
