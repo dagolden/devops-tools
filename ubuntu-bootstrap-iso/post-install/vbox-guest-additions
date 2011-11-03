@@ -1,0 +1,9 @@
+#!/bin/sh
+apt-get install build-essential dkms module-assistant
+m-a prepare
+apt-get install --no-install-recommends virtualbox-guest-additions
+mkdir /tmp/iso
+mount -o loop /usr/share/virtualbox/VBoxGuestAdditions.iso /tmp/iso
+sh /tmp/iso/VBoxLinuxAdditions.run
+umount /tmp/iso
+exit 0
