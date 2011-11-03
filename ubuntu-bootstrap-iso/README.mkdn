@@ -9,21 +9,21 @@ without any prompts or warnings.  Use it only on a new virtual or
 bare-metal machine.
 
 The ISO creates a boot partition and an LVM partition, which is further
-divided into a swap partition and a single system partition.  The ISO also
-installs the openssh-server task, as well as the vim and screen
-packages.  When installation is complete, a full "apt-get update; apt-get
-dist-upgrade" is performed and the system is rebooted.
+divided into a swap partition and a single system partition.  The ISO
+also installs the openssh-server task, as well as the vim and screen
+packages.  When installation is complete, a full "apt-get update;
+apt-get dist-upgrade" is performed and the system is rebooted.
 
 On reboot, executable scripts in /etc/post-install.d are run, then set
-non-executable.  These can be used for additional automated configuration,
-such as installing a configuration manager like chef or installing VM guest
-tools like the VirtualBox Guest Additions.
+non-executable.  These can be used for additional automated
+configuration, such as installing a configuration manager like chef or
+installing VM guest tools like the VirtualBox Guest Additions.
 
-Unlike a standard Ubuntu install, the root account is enabled and no user
-account is created.  (It is assumed that any such config will be done by
-the configuration management tool instead.)  The root password is set in
-the preseed file with an md5crypt password.  You will need to generate your
-own md5crypt password.  For example:
+Unlike a standard Ubuntu install, the root account is enabled and no
+user account is created.  (It is assumed that any such config will be
+done by the configuration management tool instead.)  The root password
+is set in the preseed file with an md5crypt password.  You will need to
+generate your own md5crypt password.  For example:
 
     $ openssl passwd -1
     Password: trustno1
@@ -41,7 +41,7 @@ Synopsis:
       --iso /path/to/ubuntu.iso \
       --mount /mnt/iso \
       --scratch /var/tmp/bootstrap-iso \
-      --src ./preseed/11.04-alternative-amd64 \
+      --seed ./preseed/11.04-alternative-amd64 \
       --post ./post-install/chef
       --output /path/to/new.iso \
       --sudo \
@@ -60,12 +60,13 @@ able to mount an ISO as a loopback filesystem (possibly with sudo).
 # Included pre-seeds
 
 Each of the subdirectories holds preseed data for a different version
-Ubuntu. Use them with the `--src` parameter.
+Ubuntu. Use them with the `--seed` parameter.
 
 # Post install scripts
 
 Scripts in the post-install directory are available for additional
-configuration on first boot.
+configuration on first boot.  Use them with the `--post` parameters.
+They may be specified multiple times.
 
 # Usage with VirtualBox
 

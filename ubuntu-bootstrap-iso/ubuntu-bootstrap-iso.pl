@@ -20,7 +20,7 @@ my $parsed_ok = GetOptions(
   'mount|m=s'   => \(my $mount),
   'scratch|s=s' => \(my $scratch),
   'output|o=s'  => \(my $output),
-  'src|s=s'     => \(my $src),
+  'seed|s=s'    => \(my $seed),
   'post|p:s@'   => \(my $postinstalls),
   'clean|c'     => \(my $clean),
   'sudo|S'      => \(my $sudo),
@@ -31,7 +31,7 @@ die "ISO '$iso' not found\n" unless -f $iso;
 
 # confirm we have patch files
 for my $f ( qw/custom.seed autoinstall.patch/ ) {
-  die "Source '$src' does not contain seed file" unless -f "$src/$f";
+  die "Source '$seed' does not contain seed file" unless -f "$seed/$f";
 }
 
 # confirm post-install paths are valid
@@ -40,10 +40,10 @@ for my $pi ( @$postinstalls ) {
 };
 
 # remove trailing slashes
-s{/$}{} for ( $mount, $scratch, $src );
+s{/$}{} for ( $mount, $scratch, $seed );
 
-# patch does chdir so src must be absolute
-$src = abs_path($src);
+# patch does chdir so seed must be absolute
+$seed = abs_path($seed);
 
 #--------------------------------------------------------------------------#
 # Confirm command line tools are available
@@ -90,8 +90,8 @@ _system('rsync', '-a', '--delete', "$mount/", $scratch);
 _system('chmod', '-R', '+w', $scratch);
 
 say "Patching scratch directory";
-_system("cp", "$src/custom.seed", "$scratch/preseed/custom.seed");
-_system('patch','-p4','-s','-d',$scratch,'-i',"$src/autoinstall.patch");
+_system("cp", "$seed/custom.seed", "$scratch/preseed/custom.seed");
+_system('patch','-p4','-s','-d',$scratch,'-i',"$seed/autoinstall.patch");
 
 if ( @$postinstalls ) {
   say "Adding post-installation scripts";
@@ -170,7 +170,7 @@ ubuntu-bootstrap-iso.pl - Remaster an auto-installing Ubuntu ISO
     --iso /path/to/ubuntu.iso \
     --mount /mnt/iso \
     --scratch /var/tmp/bootstrap-iso \
-    --src ./ubuntu-11.04-alternative-amd64 \
+    --seed ./preseed/11.04-alternative-amd64 \
     --post ./post-install/chef \
     --output /path/to/new.iso \
     --sudo \
@@ -210,7 +210,7 @@ the entire ISO
 
 =item *
 
-C<--src PATH>: path to the directory containing the F<custom.seed> and
+C<--seed PATH>: path to the directory containing the F<custom.seed> and
 F<autoinstall.patch> files; this may need to be specific to a particular
 Ubuntu version but it's possible that files from one version will also
 work on other versions, depending on how much Ubuntu has modified the
@@ -218,10 +218,11 @@ installer
 
 =item *
 
-C<--post PATH>: path to a post-install script to be run on first boot
-of the server.  These will be copied to the output ISO and will be
-installed into F</etc/post-install.d> during installation.  They will
-be run from rc.local when the server is first booted.
+C<--post PATH>: path to a post-install script to be run on first boot of
+the server.  You may specify this option multiple times. These will be
+copied to the output ISO and will be installed into F</etc/post-install.d>
+during installation.  They will be run from rc.local when the server is
+first booted.
 
 =item *
 
