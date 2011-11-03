@@ -1,0 +1,4 @@
+#!/bin/sh
+apt-get install -y chef
+update-rc.d chef-client disable
+exit 0
