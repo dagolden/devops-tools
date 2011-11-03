@@ -41,7 +41,7 @@ Synopsis:
       --iso /path/to/ubuntu.iso \
       --mount /mnt/iso \
       --scratch /var/tmp/bootstrap-iso \
-      --src ./ubuntu-11.04-alternative-amd64 \
+      --src ./preseed/11.04-alternative-amd64 \
       --post ./post-install/chef
       --output /path/to/new.iso \
       --sudo \
