@@ -5,7 +5,7 @@ use warnings;
 
 use Cwd qw/abs_path/;
 use Getopt::Long;
-use File::Basename qw/basename/;
+use File::Basename qw/basename dirname/;
 use IPC::Cmd qw/can_run/;
 use File::Temp qw/tempfile/;
 
@@ -18,17 +18,20 @@ use File::Temp qw/tempfile/;
 my $parsed_ok = GetOptions(
   'iso=s'       => \(my $iso = ''),
   'name=s'      => \(my $name = ''),
-  'ostype:s'    => \(my $ostype = "Ubuntu_64"),
-  'memory:s'    => \(my $memory = 512),
-  'hdsize:s'    => \(my $hdsize = 8192),
+  'ostype=s'    => \(my $ostype = "Ubuntu_64"),
+  'memory=s'    => \(my $memory = 512),
+  'hdsize=s'    => \(my $hdsize = 8192),
+  'start'       => \(my $start),
+  'headless'    => \(my $headless),
 );
 
-# confirm there is an ISO
+# confirm required options
+die "--iso required" unless $iso;
+die "--name required" unless $name;
+
+# confirm valid data
 die "--iso '$iso' not found\n" unless -f $iso;
-
-die "--name required\n" unless $name;
-
-my $vdi = "$name.vdi";
+die "--name '$name' must not have whitespace\n" if $name =~ /\s/;
 
 #--------------------------------------------------------------------------#
 # Confirm command line tools are available
@@ -38,7 +41,6 @@ my %cmd_path;
 
 my @required_commands = qw(
   VBoxManage
-  VBoxHeadless
   chmod
   cp
   mkdir
@@ -64,6 +66,13 @@ _system("VBoxManage",
   'createvm', '--name', $name, '--ostype', $ostype, '--register'
 );
 
+# Find path to store virtual disk image
+my $info = _backtick("VBoxManage", 'showvminfo', $name);
+my ($vmpath) = $info =~ m{^Config file:\s+(.*)$}m;
+$vmpath //= '';
+die "Could not find VM config '$vmpath'\n" unless -f $vmpath;
+my $vdi = dirname($vmpath) . "/$name.vdi";
+
 _system("VBoxManage",
   'modifyvm', $name, '--memory', $memory, qw/--acpi on --boot1 dvd --nic1 nat/
 );
@@ -87,7 +96,11 @@ _system("VBoxManage",
   qw/--port 0 --device 1 --type dvddrive --medium/, $iso
 );
 
-#_system("VBoxHeadless", '--startvm', $name);
+if ( $start ) {
+  _system('VBoxManage', 'startvm', $name,
+    $headless ? (qw/--type headless/) : ()
+  );
+}
 
 exit 0;
 
@@ -103,6 +116,11 @@ sub _system {
   return;
 }
 
+sub _backtick {
+  my ($cmd, @args) = @_;
+  $cmd = $cmd_path{$cmd} or die "Unrecognized command '$cmd'";
+  return qx/$cmd @args/;
+}
 
 exit;
 
