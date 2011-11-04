@@ -54,6 +54,9 @@ for my $cmd ( @required_commands ) {
 # Main program
 #--------------------------------------------------------------------------#
 
+die "Virtual machine '$name' already exists\n"
+  if grep { /"$name"/ } _backtick("VBoxManage", "list", "vms");
+
 _system("VBoxManage",
   'createvm', '--name', $name, '--ostype', $ostype, '--register'
 );
