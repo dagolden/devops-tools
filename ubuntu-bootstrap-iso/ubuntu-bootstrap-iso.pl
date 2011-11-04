@@ -249,7 +249,7 @@ ubuntu-bootstrap-iso.pl - Remaster an auto-installing Ubuntu ISO
 
 This tool modifies a stock Ubuntu "alternate install" ISO with a custom
 "preseed" file that carries out a fully-automated install sufficient to
-bootstrap the chef configuration management tool.
+bootstrap a configuration management tool.
 
 **Caution**: This automated ISO will **DESTROY** a system it boots on
 without any prompts or warnings.  Use it only on a new virtual or
