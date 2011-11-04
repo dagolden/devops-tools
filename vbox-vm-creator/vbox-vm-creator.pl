@@ -6,6 +6,7 @@ use warnings;
 use Cwd qw/abs_path/;
 use Getopt::Long;
 use File::Basename qw/basename dirname/;
+use IO::Socket::INET;
 use IPC::Cmd qw/can_run/;
 use File::Temp qw/tempfile/;
 
@@ -22,6 +23,7 @@ my $parsed_ok = GetOptions(
   'memory=s'    => \(my $memory = 512),
   'hdsize=s'    => \(my $hdsize = 8192),
   'network=s'   => \(my $network = 'bridged'),
+  'hostadapter' => \(my $hostadapter = 'eth0'),
   'start'       => \(my $start),
   'headless'    => \(my $headless),
 );
@@ -70,7 +72,9 @@ my $vdi = dirname($vmpath) . "/$name.vdi";
 
 _system("VBoxManage",
   'modifyvm', $name, '--memory', $memory, '--nic1', $network,
-  qw/--acpi on --boot1 dvd/
+  qw/--acpi on --boot1 dvd/,
+  ($network eq 'bridged' ? ('--bridgeadapter1', $hostadapter) : ()),
+  ($network eq 'hostonly' ? ('--hostonlyadapter1', $hostadapter) : ()),
 );
 
 _system("VBoxManage",
@@ -94,8 +98,17 @@ _system("VBoxManage",
 
 if ( $start ) {
   _system('VBoxManage', 'startvm', $name,
-    $headless ? (qw/--type headless/) : ()
+    ($headless ? (qw/--type headless/) : ())
   );
+  say "Waiting for VM '$name' to have an IP and respond to SSH";
+  do {
+    sleep 1;
+  } until grep { /"$name"/ } _backtick("VBoxManage", qw/list runningvms/);
+  my $ip;
+  do {
+    sleep 1;
+  } until ($ip = _has_ip($name)) && _can_ssh($ip);
+  say "VM '$name' appears ready on $ip";
 }
 
 exit 0;
@@ -103,6 +116,37 @@ exit 0;
 #--------------------------------------------------------------------------#
 # Utility subroutines
 #--------------------------------------------------------------------------#
+
+sub _vm_uuid {
+  my ($vm) = @_;
+  my $res = _backtick("VBoxManage", qw/showvminfo/, $vm);
+  my ($uuid) = $res =~ /^UUID:\s+(\S+)/m;
+  return $uuid;
+}
+
+sub _has_ip {
+  my ($vm) = @_;
+  # get IP by UUID in case old data by name is there and stale
+  my $res = _backtick("VBoxManage", qw/guestproperty get/, _vm_uuid($vm),
+    '/VirtualBox/GuestInfo/Net/0/V4/IP'
+  );
+  if ( $res =~ /^Value:\s+(\d+(?:\.\d+){3})/ ) {
+    return $1;
+  }
+  return;
+}
+
+sub _can_ssh {
+  my ($ip) = @_;
+  die "No IP provided for SSH\n" unless $ip;
+  my $ssh = IO::Socket::INET->new(
+    PeerAddr => $ip,
+    PeerPort => '22',
+    Proto => 'tcp',
+    Timeout => '5',
+  );
+  return $ssh && $ssh->connected;
+}
 
 sub _system {
   my ($cmd, @args) = @_;
