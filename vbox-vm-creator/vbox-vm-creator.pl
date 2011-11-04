@@ -41,15 +41,6 @@ my %cmd_path;
 
 my @required_commands = qw(
   VBoxManage
-  chmod
-  cp
-  mkdir
-  mkisofs
-  mount
-  patch
-  rm
-  rsync
-  umount
 );
 
 
