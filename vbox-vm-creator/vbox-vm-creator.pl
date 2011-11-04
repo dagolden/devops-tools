@@ -126,10 +126,18 @@ vbox-vm-creator.pl - Create a VirtualBox VM from an ISO
 =head1 SYNOPSIS
 
   $ vbox-vm-creator.pl \
-    --iso /path/to/ubuntu.iso
+    --iso /path/to/ubuntu.iso \
+    --name MyNewVM \
+    --ostype Ubuntu_64 \
+    --memory 512 \
+    --hdsize 8192 \
+    --network bridged \
+    --start
 
 =head1 DESCRIPTION
 
+This program automates the creation of a new VirtualBox virtual machine
+from a ISO image.
 
 =head1 OPTIONS
 
@@ -138,6 +146,40 @@ vbox-vm-creator.pl - Create a VirtualBox VM from an ISO
 =item *
 
 C<--iso PATH>: path to the install ISO
+
+=item *
+
+C<--name NAME>: name of the new VM.  It must not have whitespace.
+
+=item *
+
+C<--ostype TYPE>: OS type to set VM defaults. See C<VBoxManage list ostypes>
+for valid types.  Default is "Ubuntu_64".
+
+=item *
+
+C<--memory MEGABYTES>: size of VM RAM. Default is 512.
+
+=item *
+
+C<--hdsize MEGABYTES>: size of VM hard drive. Default is 8192.
+
+=item *
+
+C<--network TYPE>: defines the type of network the VM is connected to.
+Defaults to 'bridged'.  Other common choices are 'nat', 'intnet' or 'hostonly'.
+See the VirtualBox manual for more esoteric options.
+
+=item *
+
+C<--start>: indicates that the VM should be booted after it is created so
+that the ISO can install the operating system.  If not used, the VM can
+be started manually with C<VBoxManage startvm NAME>.
+
+=item *
+
+C<--headless>: When C<--start> is given, this option has the VM booted in
+"headless" mode.
 
 =head1 COPYRIGHT AND LICENSE
 
