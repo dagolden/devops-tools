@@ -228,6 +228,8 @@ be started manually with C<VBoxManage startvm NAME>.
 C<--headless>: When C<--start> is given, this option has the VM booted in
 "headless" mode.
 
+=back
+
 =head1 COPYRIGHT AND LICENSE
 
 This software is Copyright (c) 2011 by David Golden.
