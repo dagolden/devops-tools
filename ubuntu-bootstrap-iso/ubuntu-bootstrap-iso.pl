@@ -24,6 +24,8 @@ my $parsed_ok = GetOptions(
   'post|p=s@'   => \(my $postinstalls),
   'clean|c'     => \(my $clean),
   'sudo|S'      => \(my $sudo),
+  'password|s=s'  => \(my $password = ''),
+  'publickey|s=s' => \(my $publickey),
 );
 
 # mandatory options
@@ -44,6 +46,11 @@ for my $f ( qw/custom.seed autoinstall.patch/ ) {
 for my $pi ( @$postinstalls ) {
   die "Post-install script '$pi' does not exist" unless -f $pi
 };
+
+# confirm public key path is valid
+if ( $publickey ) {
+  die "Public key '$publickey' does not exist" unless -f $publickey
+}
 
 # remove trailing slashes
 s{/$}{} for ( $mount, $scratch, $seed );
@@ -69,6 +76,7 @@ my @required_commands = qw(
   patch
   rm
   rsync
+  sed
   umount
 );
 
@@ -77,6 +85,31 @@ push @required_commands, 'sudo' if $sudo;
 for my $cmd ( @required_commands ) {
   $cmd_path{$cmd} = can_run($cmd)
     or die "Could not find '$cmd' in PATH";
+}
+
+#--------------------------------------------------------------------------#
+# crypt password if provided
+#--------------------------------------------------------------------------#
+
+if ( $password ) {
+  my $have_cryptmd5 = eval { require Crypt::PasswordMD5 };
+  my $have_md5pass = can_run("md5pass");
+  $cmd_path{md5pass} = $have_md5pass if $have_md5pass;
+  die "Crypt::PasswordMD5 or the 'mdpass' program required for --password\n"
+    unless $have_cryptmd5 or $have_md5pass;
+  # get password if requested from STDIN
+  if ( $password eq '-' ) {
+    say "Enter root password:";
+    $password = <STDIN>;
+    chomp($password);
+  }
+  if ( $have_cryptmd5 ) {
+    $password = unix_md5_crypt($password);
+  }
+  else {
+    $password = _backtick("md5pass", $password);
+    chomp $password;
+  }
 }
 
 #--------------------------------------------------------------------------#
@@ -99,8 +132,20 @@ _system('rsync', '-a', '--delete', "$mount/", $scratch);
 _system('chmod', '-R', '+w', $scratch);
 
 say "Patching scratch directory";
-_system("cp", "$seed/custom.seed", "$scratch/preseed/custom.seed");
 _system('patch','-p4','-s','-d',$scratch,'-i',"$seed/autoinstall.patch");
+
+# fix up password or else just copy with default password
+if ( $password ) {
+  my $custom_seed = do { local (@ARGV,$/) = "$seed/custom.seed"; <> };
+  $custom_seed =~ s{password \$1\$\S+}{password $password};
+  my ($fh, $temp_name) = tempfile;
+  print {$fh} $custom_seed;
+  close $fh;
+  _system("cp", $temp_name, "$scratch/preseed/custom.seed");
+}
+else {
+  _system("cp", "$seed/custom.seed", "$scratch/preseed/custom.seed");
+}
 
 if ( @$postinstalls ) {
   say "Adding post-installation scripts";
@@ -111,6 +156,13 @@ if ( @$postinstalls ) {
     _system("cp", $pi, "$pi_target/" . basename($pi));
   }
   _system("chmod", '-R', '+x', $pi_target);
+}
+
+if ( $publickey ) {
+  say "Adding publickey file";
+  my $key = do { local( @ARGV, $/ ) = $publickey; <> };
+  my $keyfile = ($key =~ /^ssh-rsa/) ? "id_rsa.pub" : "id_dsa.pub";
+  _system('cp', $publickey, "$scratch/$keyfile");
 }
 
 say "Creating new ISO at $output";
@@ -164,6 +216,12 @@ sub _system {
   return;
 }
 
+sub _backtick {
+  my ($cmd, @args) = @_;
+  $cmd = $cmd_path{$cmd} or die "Unrecognized command '$cmd'";
+  return qx/$cmd @args/;
+}
+
 
 exit;
 
@@ -181,6 +239,8 @@ ubuntu-bootstrap-iso.pl - Remaster an auto-installing Ubuntu ISO
     --scratch /var/tmp/bootstrap-iso \
     --seed ./preseed/11.04-alternative-amd64 \
     --post ./post-install/chef \
+    --password - \
+    --publickey ~/.ssh/id_rsa.pub \
     --output /path/to/new.iso \
     --sudo \
     --clean
@@ -232,6 +292,16 @@ the server.  You may specify this option multiple times. These will be
 copied to the output ISO and will be installed into F</etc/post-install.d>
 during installation.  They will be run from rc.local when the server is
 first booted.
+
+=item *
+
+C<--password PASSWORD>: root password that is set during install.  If you
+specify "-" you will be prompted to type it in.
+
+=tem *
+
+C<--publickey PATH>: path to a public key file to be installed into
+root's F<authorized_keys> file
 
 =item *
 
