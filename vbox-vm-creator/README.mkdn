@@ -7,14 +7,14 @@ installing an operating system from an ISO image.
 
 Synopsis:
 
-  $ vbox-vm-creator.pl \
-    --iso /path/to/ubuntu.iso \
-    --name MyNewVM \
-    --ostype Ubuntu_64 \
-    --memory 512 \
-    --hdsize 8192 \
-    --network bridged \
-    --start
+    $ vbox-vm-creator.pl \
+      --iso /path/to/ubuntu.iso \
+      --name MyNewVM \
+      --ostype Ubuntu_64 \
+      --memory 512 \
+      --hdsize 8192 \
+      --network bridged \
+      --start
 
 Run perldoc on the tool for more details:
 
