@@ -108,7 +108,7 @@ sub _system {
   my ($cmd, @args) = @_;
   $cmd = $cmd_path{$cmd} or die "Unrecognized command '$cmd'";
   system($cmd, @args)
-    and die "Error running $cmd @args" . ( $! ? "$!\n" : "\n" );
+    and die "Error running $cmd @args" . ( $! ? ": $!\n" : "\n" );
   return;
 }
 
