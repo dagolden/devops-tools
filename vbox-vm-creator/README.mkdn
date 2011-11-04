@@ -1,0 +1,50 @@
+# vbox-vm-creator
+
+This program automates the process of creating a VirtualBox VM and
+installing an operating system from an ISO image.
+
+# Usage
+
+Synopsis:
+
+  $ vbox-vm-creator.pl \
+    --iso /path/to/ubuntu.iso \
+    --name MyNewVM \
+    --ostype Ubuntu_64 \
+    --memory 512 \
+    --hdsize 8192 \
+    --network bridged \
+    --start
+
+Run perldoc on the tool for more details:
+
+    perldoc vbox-vm-creator.pl
+
+# Requirements
+
+This has been tested on Ubuntu, but should work on any Linux system with
+perl 5.10 (or later), rsync, mkisofs, mount, etc.
+
+VirtualBox must be installed and an operating system installation ISO file
+must be available.  Internet is required to complete installation.
+
+# Finding a VirtualBox IP Address
+
+Note that if VirtualBox Guest Additions are installed, you can retrieve the IP
+address of a running virtual machine using the `VBoxManage` program.  E.g. for
+a virtual machine called 'MyNewVM':
+
+    $ VBoxManage guestproperty get MyNewVM /VirtualBox/GuestInfo/Net/0/V4/IP
+    Value: 192.168.15.170
+
+Using the "--start" parameter will cause vbox-vm-creator.pl to wait until SSH
+is available and then will report the IP address.  Guest additions must be
+installed for this to work.
+
+# Copyright and License
+
+This software is Copyright (c) 2011 by David Golden.
+ 
+This is open-source software and may be licensed under The Apache License,
+Version 2.0, January 2004.
+

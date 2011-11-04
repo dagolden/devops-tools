@@ -7,7 +7,12 @@ in case any of it proves useful to others.
 
 This tool modifies a stock Ubuntu "alternate install" ISO with a custom
 "preseed" file that carries out a fully-automated install sufficient to
-bootstrap the chef configuration management tool.
+bootstrap a configuration management tool.
+
+## vbox-vm-creator
+
+This tool creates a new VirtualBox VM and installs an operating system
+from an ISO file (like the one created by ubuntu-bootstrap-iso).
 
 # Copyright and License
 

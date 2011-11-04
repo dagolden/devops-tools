@@ -22,16 +22,10 @@ installing VM guest tools like the VirtualBox Guest Additions.
 Unlike a standard Ubuntu install, the root account is enabled and no
 user account is created.  (It is assumed that any such config will be
 done by the configuration management tool instead.)  The root password
-is set in the preseed file with an md5crypt password.  You will need to
-generate your own md5crypt password.  For example:
+is set in the preseed file with an md5crypt password.  You can set the
+password using the '--password' option.
 
-    $ openssl passwd -1
-    Password: trustno1
-    Verifying - Password: trustno1
-    $1$9TU3fhzj$DDbGHxqf.MFRxoaBoMbDS.
-
-Look for the line in custom.seed containing "passwd/root-password-crypted"
-and replace the crypted password on that line with your own.
+You can also install a public key for SSH with the '--publickey' option.
 
 # Usage
 
@@ -42,7 +36,9 @@ Synopsis:
       --mount /mnt/iso \
       --scratch /var/tmp/bootstrap-iso \
       --seed ./preseed/11.04-alternative-amd64 \
-      --post ./post-install/chef
+      --post ./post-install/chef \
+      --password TrustNo1 \
+      --preseed /path/to/id_rsa.pub \
       --output /path/to/new.iso \
       --sudo \
       --clean
@@ -67,16 +63,6 @@ Ubuntu. Use them with the `--seed` parameter.
 Scripts in the post-install directory are available for additional
 configuration on first boot.  Use them with the `--post` parameters.
 They may be specified multiple times.
-
-# Usage with VirtualBox
-
-Note that you can retrieve the IP address of a virtual machine using
-the `VBoxManage` program.  E.g. for a virtual machine called 'MyVM':
-
-    $ VBoxManage guestproperty get MyVM /VirtualBox/GuestInfo/Net/0/V4/IP
-    Value: 192.168.15.170
-
-You can then SSH to root at the given IP address. 
 
 # Copyright and License
 
