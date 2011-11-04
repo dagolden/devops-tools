@@ -21,10 +21,16 @@ my $parsed_ok = GetOptions(
   'scratch|s=s' => \(my $scratch),
   'output|o=s'  => \(my $output),
   'seed|s=s'    => \(my $seed),
-  'post|p:s@'   => \(my $postinstalls),
+  'post|p=s@'   => \(my $postinstalls),
   'clean|c'     => \(my $clean),
   'sudo|S'      => \(my $sudo),
 );
+
+# mandatory options
+die "--iso required" unless $iso;
+die "--mount required" unless $mount;
+die "--output required" unless $output;
+die "--seed required" unless $seed;
 
 # confirm there is an ISO
 die "ISO '$iso' not found\n" unless -f $iso;
@@ -41,6 +47,9 @@ for my $pi ( @$postinstalls ) {
 
 # remove trailing slashes
 s{/$}{} for ( $mount, $scratch, $seed );
+
+# make up a scratch dir if not provided
+$scratch //= tempdir( CLEANUP => $clean );
 
 # patch does chdir so seed must be absolute
 $seed = abs_path($seed);
