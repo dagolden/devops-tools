@@ -14,6 +14,11 @@ bootstrap a configuration management tool.
 This tool creates a new VirtualBox VM and installs an operating system
 from an ISO file (like the one created by ubuntu-bootstrap-iso).
 
+## vbox-find-ip
+
+This tool gets the IP address from a running VirtualBox VM (requires
+Guest Additions).
+
 # Copyright and License
 
 Unless otherwise noted, software in this repository is Copyright (c) 2011 by

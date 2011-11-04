@@ -1,0 +1,30 @@
+# vbox-vm-creator
+
+This program is shorthand for getting the IP address from VirtualBox
+VM Guest Properties.
+
+# Usage
+
+Synopsis:
+
+    $ vbox-find-ip.pl --name MyNewVM
+
+Run perldoc on the tool for more details:
+
+    perldoc vbox-find-ip.pl
+
+# Requirements
+
+This has been tested on Ubuntu, but should work on any Linux system with
+perl 5.10 (or later), rsync, mkisofs, mount, etc.
+
+VirtualBox must be installed and Guest Additions must be installed on a
+VM for the IP to be found.
+
+# Copyright and License
+
+This software is Copyright (c) 2011 by David Golden.
+ 
+This is open-source software and may be licensed under The Apache License,
+Version 2.0, January 2004.
+
