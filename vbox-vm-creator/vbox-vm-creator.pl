@@ -13,18 +13,20 @@ use File::Temp qw/tempfile/;
 # Process and validate command line options
 #--------------------------------------------------------------------------#
 
-Getopt::Long::Configure("bundling");
+#Getopt::Long::Configure("bundling");
 
 my $parsed_ok = GetOptions(
-  'iso|i=s'     => \(my $iso),
-  'name|n=s'    => \(my $name),
+  'iso=s'       => \(my $iso = ''),
+  'name=s'      => \(my $name = ''),
   'ostype:s'    => \(my $ostype = "Ubuntu_64"),
   'memory:s'    => \(my $memory = 512),
   'hdsize:s'    => \(my $hdsize = 8192),
 );
 
 # confirm there is an ISO
-die "ISO '$iso' not found\n" unless -f $iso;
+die "--iso '$iso' not found\n" unless -f $iso;
+
+die "--name required\n" unless $name;
 
 my $vdi = "$name.vdi";
 
