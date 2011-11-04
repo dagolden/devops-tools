@@ -147,9 +147,11 @@ else {
   _system("cp", "$seed/custom.seed", "$scratch/preseed/custom.seed");
 }
 
+say "Adding custom rc.local";
+_gen_rc_local("$scratch/rc.local.new");
+
 if ( @$postinstalls ) {
   say "Adding post-installation scripts";
-  _gen_post_install("$scratch/rc.local.new");
   my $pi_target = "$scratch/post-install.d";
   _system('mkdir', '-p', $pi_target);
   for my $pi ( @$postinstalls ) {
@@ -182,12 +184,17 @@ if ( $clean ) {
 # Utility subroutines
 #--------------------------------------------------------------------------#
 
-sub _gen_post_install {
+sub _gen_rc_local {
   my ($path) = @_;
 
   my ($fh, $fname) = tempfile;
   print {$fh} <<'HERE';
 #!/bin/sh
+
+# These cause problems with VM cloning, so keep them empty
+echo -n > /lib/udev/rules.d/75-persistent-net-generator.rules
+echo -n > /etc/udev/rules.d/70-persistent-net.rules
+
 if [ -d /etc/post-install.d ]; then
   for i in /etc/post-install.d/*; do
     if [ -x $i ]; then
