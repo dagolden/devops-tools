@@ -21,6 +21,7 @@ my $parsed_ok = GetOptions(
   'ostype=s'    => \(my $ostype = "Ubuntu_64"),
   'memory=s'    => \(my $memory = 512),
   'hdsize=s'    => \(my $hdsize = 8192),
+  'network=s'   => \(my $network = 'bridged'),
   'start'       => \(my $start),
   'headless'    => \(my $headless),
 );
@@ -65,7 +66,8 @@ die "Could not find VM config '$vmpath'\n" unless -f $vmpath;
 my $vdi = dirname($vmpath) . "/$name.vdi";
 
 _system("VBoxManage",
-  'modifyvm', $name, '--memory', $memory, qw/--acpi on --boot1 dvd --nic1 nat/
+  'modifyvm', $name, '--memory', $memory, '--nic1', $network,
+  qw/--acpi on --boot1 dvd/
 );
 
 _system("VBoxManage",
