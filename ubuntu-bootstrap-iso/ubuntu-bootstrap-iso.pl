@@ -305,7 +305,7 @@ first booted.
 C<--password PASSWORD>: root password that is set during install.  If you
 specify "-" you will be prompted to type it in.
 
-=tem *
+=item *
 
 C<--publickey PATH>: path to a public key file to be installed into
 root's F<authorized_keys> file

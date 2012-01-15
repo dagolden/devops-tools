@@ -38,7 +38,7 @@ Synopsis:
       --seed ./preseed/11.04-alternative-amd64 \
       --post ./post-install/chef \
       --password TrustNo1 \
-      --preseed /path/to/id_rsa.pub \
+      --publickey /path/to/id_rsa.pub \
       --output /path/to/new.iso \
       --sudo \
       --clean
