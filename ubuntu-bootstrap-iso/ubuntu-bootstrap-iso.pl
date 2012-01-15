@@ -141,9 +141,11 @@ if ( $password ) {
   my ($fh, $temp_name) = tempfile;
   print {$fh} $custom_seed;
   close $fh;
+  _system("mkdir", "-p", "$scratch/preseed");
   _system("cp", $temp_name, "$scratch/preseed/custom.seed");
 }
 else {
+  _system("mkdir", "-p", "$scratch/preseed");
   _system("cp", "$seed/custom.seed", "$scratch/preseed/custom.seed");
 }
 
