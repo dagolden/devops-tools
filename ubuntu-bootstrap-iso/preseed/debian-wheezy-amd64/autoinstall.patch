@@ -10,17 +10,17 @@ diff -ur /tmp/ubuntu-iso/isolinux/isolinux.cfg /srv/scratch/ubuntu-iso-modified/
 diff -ur /tmp/ubuntu-iso/isolinux/txt.cfg /srv/scratch/ubuntu-iso-modified//isolinux/txt.cfg
 --- /tmp/ubuntu-iso/isolinux/txt.cfg	2011-04-26 08:57:25.000000000 -0400
 +++ /srv/scratch/ubuntu-iso-modified//isolinux/txt.cfg	2011-10-06 22:58:11.860439038 -0400
-@@ -1,6 +1,11 @@
- default install
+@@ -1,6 +1,10 @@
+-default install
 +default automated
 +label automated
 +	menu label ^Install (automated)
-+	kernel /install/vmlinuz
-+	append auto=true priority=critical file=/cdrom/preseed/custom.seed vga=788 initrd=/install/initrd.gz text --
++	menu default
++	kernel /install.amd/vmlinuz
++	append auto=true priority=critical preseed/file=/cdrom/preseed/custom.seed debian/priority=critical vga=788 initrd=/install.amd/initrd.gz text --
  label install
--	menu label ^Install
-+	menu label ^Install (manual)
- 	menu default
+ 	menu label ^Install
+-	menu default
  	kernel /install.amd/vmlinuz
--	append vga=788 initrd=/install.amd/initrd.gz -- quiet 
-+	append vga=788 initrd=/install.amd/initrd.gz file=/cdrom/preseed/ubuntu.seed -- quiet
+ 	append vga=788 initrd=/install.amd/initrd.gz -- quiet 
+
