@@ -221,7 +221,7 @@ sub _system {
     $cmd = $cmd_path{sudo};
   }
   system($cmd, @args)
-    and die "Error running $cmd @args" . ( $! ? "$!\n" : "\n" );
+    and die "Error running $cmd @args:\n" . ( $! ? "$!\n" : "\n" );
   return;
 }
 
